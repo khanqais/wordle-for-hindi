@@ -1,0 +1,24 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WordleStat {
+  id           Int    @id @default(autoincrement())
+  userId       String @unique          
+  gamesPlayed  Int    @default(0)
+  wins         Int    @default(0)
+  curStreak    Int    @default(0)
+  maxStreak    Int    @default(0)
+}
