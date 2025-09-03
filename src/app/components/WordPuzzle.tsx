@@ -1,7 +1,8 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ChevronLeft, Check, X, RotateCcw } from 'lucide-react'
 import { recordGame } from '@/app/actions/stats'
+import { getCurrentTargetWord } from '@/app/actions/wordleConfig'
 
 const ROWS = 6
 const COLS = 5
@@ -14,20 +15,37 @@ const keyboardRows = [
   ['CLEAR', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'SUBMIT'],
 ]
 
-const TARGET_WORD = 'BRAIN'
-
 export default function WordPuzzle() {
   const [grid, setGrid] = useState(initialGrid)
   const [currentRow, setCurrentRow] = useState(0)
   const [currentCol, setCurrentCol] = useState(0)
   const [gameStatus, setGameStatus] = useState('playing')
+  const [targetWord, setTargetWord] = useState('BRAIN')
+  const [loading, setLoading] = useState(true)
+
+  // Fetch target word on component mount
+  useEffect(() => {
+    const fetchTargetWord = async () => {
+      try {
+        const word = await getCurrentTargetWord()
+        setTargetWord(word)
+      } catch (error) {
+        console.error('Failed to fetch target word:', error)
+        setTargetWord('BRAIN') // fallback
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchTargetWord()
+  }, [])
 
   function getCellStyle(letter: string, rowIndex: number, colIndex: number) {
     if (!letter) return 'bg-gray-800 border-2 border-gray-600 text-gray-300'
     
     if (rowIndex < currentRow) {
-      if (letter === TARGET_WORD[colIndex]) return 'bg-emerald-600 border-emerald-500 text-white'
-      if (TARGET_WORD.includes(letter)) return 'bg-amber-500 border-amber-400 text-white'
+      if (letter === targetWord[colIndex]) return 'bg-emerald-600 border-emerald-500 text-white'
+      if (targetWord.includes(letter)) return 'bg-amber-500 border-amber-400 text-white'
       return 'bg-gray-700 border-gray-600 text-gray-300'
     }
     
@@ -38,11 +56,11 @@ export default function WordPuzzle() {
     const usedLetters = grid.slice(0, currentRow).flat()
     
     if (usedLetters.includes(key)) {
-      if (TARGET_WORD.includes(key)) {
+      if (targetWord.includes(key)) {
         let isCorrectPosition = false
         for (let i = 0; i < currentRow; i++) {
           for (let j = 0; j < COLS; j++) {
-            if (grid[i][j] === key && TARGET_WORD[j] === key) {
+            if (grid[i][j] === key && targetWord[j] === key) {
               isCorrectPosition = true
             }
           }
@@ -68,7 +86,7 @@ export default function WordPuzzle() {
       if (currentCol !== COLS) return
       
       const currentWord = grid[currentRow].join('')
-      if (currentWord === TARGET_WORD) {
+      if (currentWord === targetWord) {
         setGameStatus('won')
         recordGame(true)
         return
@@ -93,18 +111,22 @@ export default function WordPuzzle() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 ">
-     
-      {gameStatus !== 'playing' && (
-        <div className="mb-4 p-3 rounded-lg bg-gray-800 border border-gray-600">
-          <p className="text-lg font-semibold text-center">
-            {gameStatus === 'won' ? (
-              <span className="text-emerald-400">🎉 You won!</span>
-            ) : (
-              <span className="text-red-400">Word: {TARGET_WORD}</span>
-            )}
-          </p>
-        </div>
-      )}
+      {loading ? (
+        <div className="text-white text-lg">Loading...</div>
+      ) : (
+        <>
+          {/* Game status message */}
+          {gameStatus !== 'playing' && (
+            <div className="mb-4 p-3 rounded-lg bg-gray-800 border border-gray-600">
+              <p className="text-lg font-semibold text-center">
+                {gameStatus === 'won' ? (
+                  <span className="text-emerald-400">🎉 You won!</span>
+                ) : (
+                  <span className="text-red-400">Word: {targetWord}</span>
+                )}
+              </p>
+            </div>
+          )}
 
       
       <div className="grid grid-rows-6 gap-1 mb-6 p-4 bg-gray-800 rounded-xl border border-gray-700">
@@ -147,19 +169,21 @@ export default function WordPuzzle() {
         ))}
       </div>
 
-      
-      {gameStatus !== 'playing' && (
-        <button
-          onClick={() => {
-            setGrid(initialGrid)
-            setCurrentRow(0)
-            setCurrentCol(0)
-            setGameStatus('playing')
-          }}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm"
-        >
-          Play Again
-        </button>
+          
+          {gameStatus !== 'playing' && (
+            <button
+              onClick={() => {
+                setGrid(initialGrid)
+                setCurrentRow(0)
+                setCurrentCol(0)
+                setGameStatus('playing')
+              }}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm"
+            >
+              Play Again
+            </button>
+          )}
+        </>
       )}
     </div>
   )

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 import { MdLeaderboard } from 'react-icons/md'
 import { FaLightbulb } from 'react-icons/fa'
+import { Settings } from 'lucide-react'
 import { ModeToggle } from './mode-toggle'
 import Leaderboard from './Leaderboard'
 
@@ -20,7 +21,7 @@ export default function Navbar() {
               <span className="text-sm font-bold text-white">A</span>
             </div>
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-xl font-bold text-transparent">
-              MyApp
+              Akshar
             </span>
           </Link>
 
@@ -30,9 +31,21 @@ export default function Navbar() {
               <button
                 onClick={() => setShowLeader(true)}
                 className="rounded-md p-1 text-gray-700 transition-colors hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400"
+                title="Leaderboard"
               >
                 <MdLeaderboard size={28} />
               </button>
+
+              <Link
+                href="/admin"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-1 rounded-md px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:text-blue-600 hover:bg-blue-50 dark:text-gray-300 dark:hover:text-blue-400 dark:hover:bg-blue-900/20"
+                title="Admin Panel (Opens in new tab)"
+              >
+                <Settings size={20} />
+                <span className="hidden lg:inline">Admin</span>
+              </Link>
 
               <button className="rounded-md p-1 text-gray-700 transition-colors hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400">
                 <FaLightbulb size={28} />

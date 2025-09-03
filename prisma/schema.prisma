@@ -22,3 +22,12 @@ model WordleStat {
   curStreak    Int    @default(0)
   maxStreak    Int    @default(0)
 }
+
+model WordleConfig {
+  id          Int      @id @default(autoincrement())
+  targetWord  String   @db.VarChar(5)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isActive    Boolean  @default(true)
+  createdBy   String?  
+}
