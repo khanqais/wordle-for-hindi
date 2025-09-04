@@ -11,14 +11,14 @@ export default function WordleBox() {
       <div className="absolute bottom-20 right-10 w-96 h-96 bg-green-200/20 dark:bg-green-500/10 rounded-full blur-3xl"></div>
       
       <div className="relative z-10 text-center max-w-4xl mx-auto">
-        {/* Main Title Section */}
+       
         <div className="mb-12">
-          {/* Main Title */}
+
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-black mb-4 bg-gradient-to-r from-orange-600 via-red-500 to-green-600 bg-clip-text text-transparent leading-tight">
             Akshar
           </h1>
           
-          {/* English Subtitle */}
+          
           <h2 className="text-2xl md:text-3xl font-bold text-gray-700 dark:text-gray-200 mb-2">
             Hindi Word Puzzle
           </h2>
@@ -41,38 +41,38 @@ export default function WordleBox() {
           {/* Sample Wordle Grid */}
           <div className="flex justify-center mb-6">
             <div className="grid grid-cols-5 gap-2">
-              {/* Row 1 - Some letters filled */}
+              
               <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center">
-                <span className="text-xl font-bold text-gray-700 dark:text-gray-300">B</span>
+                <span className="text-xl font-bold text-gray-700 dark:text-gray-300">P</span>
               </div>
               <div className="w-12 h-12 bg-yellow-400 rounded-lg border-2 border-yellow-500 flex items-center justify-center">
-                <span className="text-xl font-bold text-white">R</span>
+                <span className="text-xl font-bold text-white">A</span>
               </div>
               <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center">
                 <span className="text-xl font-bold text-gray-700 dark:text-gray-300">A</span>
               </div>
               <div className="w-12 h-12 bg-green-500 rounded-lg border-2 border-green-600 flex items-center justify-center">
-                <span className="text-xl font-bold text-white">I</span>
+                <span className="text-xl font-bold text-white">N</span>
               </div>
               <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center">
-                <span className="text-xl font-bold text-gray-700 dark:text-gray-300">N</span>
+                <span className="text-xl font-bold text-gray-700 dark:text-gray-300">I</span>
               </div>
               
               {/* Row 2 - Winning word */}
               <div className="w-12 h-12 bg-green-500 rounded-lg border-2 border-green-600 flex items-center justify-center">
-                <span className="text-xl font-bold text-white">S</span>
-              </div>
-              <div className="w-12 h-12 bg-green-500 rounded-lg border-2 border-green-600 flex items-center justify-center">
-                <span className="text-xl font-bold text-white">M</span>
+                <span className="text-xl font-bold text-white">P</span>
               </div>
               <div className="w-12 h-12 bg-green-500 rounded-lg border-2 border-green-600 flex items-center justify-center">
                 <span className="text-xl font-bold text-white">A</span>
               </div>
               <div className="w-12 h-12 bg-green-500 rounded-lg border-2 border-green-600 flex items-center justify-center">
-                <span className="text-xl font-bold text-white">R</span>
+                <span className="text-xl font-bold text-white">I</span>
               </div>
               <div className="w-12 h-12 bg-green-500 rounded-lg border-2 border-green-600 flex items-center justify-center">
-                <span className="text-xl font-bold text-white">T</span>
+                <span className="text-xl font-bold text-white">S</span>
+              </div>
+              <div className="w-12 h-12 bg-green-500 rounded-lg border-2 border-green-600 flex items-center justify-center">
+                <span className="text-xl font-bold text-white">A</span>
               </div>
             </div>
           </div>
