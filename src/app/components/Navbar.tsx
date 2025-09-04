@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 import { MdLeaderboard } from 'react-icons/md'
+import { MdOutlineQuestionMark } from "react-icons/md";
 import { FaLightbulb } from 'react-icons/fa'
 import { Settings } from 'lucide-react'
 import { ModeToggle } from './mode-toggle'
@@ -10,6 +11,7 @@ import Leaderboard from './Leaderboard'
 
 export default function Navbar() {
   const [showLeader, setShowLeader] = useState(false)
+  const [ShowHowTo,SetShowHowTo]=useState(false)
 
   return (
     <>
@@ -47,15 +49,15 @@ export default function Navbar() {
                 <span className="hidden lg:inline">Admin</span>
               </Link>
 
-              <button className="rounded-md p-1 text-gray-700 transition-colors hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400">
-                <FaLightbulb size={28} />
+              <button onClick={()=>SetShowHowTo(true)} className="rounded-md p-1 text-gray-700 transition-colors hover:text-blue-600 dark:text-gray-300 dark:hover:text-blue-400">
+                <MdOutlineQuestionMark size={28} />
               </button>
             </SignedIn>
           </div>
 
           
           <div className="flex items-center space-x-4">
-            <ModeToggle />
+            
 
             <SignedOut>
               <SignInButton mode="modal">
