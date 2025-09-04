@@ -41,15 +41,21 @@ export default function WordPuzzle() {
   }, [])
 
   function getCellStyle(letter: string, rowIndex: number, colIndex: number) {
-    if (!letter) return 'bg-gray-800 border-2 border-gray-600 text-gray-300'
-    
-    if (rowIndex < currentRow) {
-      if (letter === targetWord[colIndex]) return 'bg-emerald-600 border-emerald-500 text-white'
-      if (targetWord.includes(letter)) return 'bg-amber-500 border-amber-400 text-white'
-      return 'bg-gray-700 border-gray-600 text-gray-300'
+    if (!letter) {
+      return 'bg-white/60 dark:bg-gray-700/60 border-2 border-gray-200 dark:border-gray-600 text-gray-400 dark:text-gray-500'
     }
     
-    return 'bg-gray-900 border-2 border-gray-500 text-white'
+    if (rowIndex < currentRow) {
+      if (letter === targetWord[colIndex]) {
+        return 'bg-gradient-to-br from-green-400 to-green-600 border-green-500 text-white shadow-lg'
+      }
+      if (targetWord.includes(letter)) {
+        return 'bg-gradient-to-br from-yellow-400 to-orange-500 border-orange-400 text-white shadow-lg'
+      }
+      return 'bg-gradient-to-br from-gray-400 to-gray-600 border-gray-500 text-white shadow-lg'
+    }
+    
+    return 'bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white shadow-md'
   }
 
   function getKeyStyle(key: string) {
@@ -65,12 +71,14 @@ export default function WordPuzzle() {
             }
           }
         }
-        return isCorrectPosition ? 'bg-emerald-600 text-white' : 'bg-amber-500 text-white'
+        return isCorrectPosition 
+          ? 'bg-gradient-to-br from-green-400 to-green-600 text-white border border-green-500' 
+          : 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white border border-orange-400'
       }
-      return 'bg-gray-700 text-gray-300'
+      return 'bg-gradient-to-br from-gray-400 to-gray-600 text-white border border-gray-500'
     }
     
-    return 'bg-gray-600 text-white hover:bg-gray-500'
+    return 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
   }
 
   function handleKeyPress(key: string) {
@@ -110,81 +118,154 @@ export default function WordPuzzle() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 ">
-      {loading ? (
-        <div className="text-white text-lg">Loading...</div>
-      ) : (
-        <>
-          {/* Game status message */}
-          {gameStatus !== 'playing' && (
-            <div className="mb-4 p-3 rounded-lg bg-gray-800 border border-gray-600">
-              <p className="text-lg font-semibold text-center">
-                {gameStatus === 'won' ? (
-                  <span className="text-emerald-400">🎉 You won!</span>
-                ) : (
-                  <span className="text-red-400">Word: {targetWord}</span>
-                )}
-              </p>
+    <div className="h-screen flex flex-col p-2 md:p-4 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute top-10 left-10 w-48 h-48 bg-indigo-200/20 dark:bg-indigo-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-200/20 dark:bg-purple-500/10 rounded-full blur-3xl"></div>
+      
+      <div className="relative z-10 flex flex-col h-full max-w-md mx-auto w-full">
+        {loading ? (
+          <div className="flex-1 flex flex-col items-center justify-center space-y-4">
+            <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+            <p className="text-lg text-gray-600 dark:text-gray-300 font-medium">Loading today's puzzle...</p>
+          </div>
+        ) : (
+          <>
+            {/* Compact Header */}
+            <div className="text-center py-2 md:py-4">
+              <h1 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Akshar
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Guess the 5-letter word!</p>
             </div>
-          )}
 
-      
-      <div className="grid grid-rows-6 gap-1 mb-6 p-4 bg-gray-800 rounded-xl border border-gray-700">
-        {grid.map((rowData, rowIndex) => (
-          <div key={rowIndex} className="flex gap-1">
-            {rowData.map((letter, colIndex) => (
-              <div 
-                key={`${rowIndex}-${colIndex}`} 
-                className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-xl font-bold rounded transition-all duration-300 ${getCellStyle(letter, rowIndex, colIndex)}`}
-              >
-                {letter}
+            {/* Game status message */}
+            {gameStatus !== 'playing' && (
+              <div className="mb-2 p-3 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border border-white/20 dark:border-gray-700/20 shadow-lg">
+                <div className="text-center">
+                  {gameStatus === 'won' ? (
+                    <div className="space-y-1">
+                      <div className="text-2xl">🎉</div>
+                      <p className="text-base font-bold text-green-600 dark:text-green-400">Congratulations!</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">Found in {currentRow} tries!</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-1">
+                      <div className="text-2xl">😅</div>
+                      <p className="text-base font-bold text-red-600 dark:text-red-400">Better luck next time!</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-300">
+                        Word: <span className="font-bold text-gray-900 dark:text-white">{targetWord}</span>
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
-            ))}
-          </div>
-        ))}
-      </div>
+            )}
 
-      
-      <div className="space-y-1 max-w-sm md:max-w-lg">
-        {keyboardRows.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex justify-center gap-1">
-            {row.map((key) => (
-              <button
-                key={key}
-                onClick={() => handleKeyPress(key)}
-                disabled={gameStatus !== 'playing'}
-                className={`
-                  text-xs px-1 py-1 md:px-2 md:py-2 rounded font-semibold transition-all duration-200
-                  ${key === 'SUBMIT' || key === 'CLEAR' ? 'px-3 text-xs' : 'w-7 h-7 md:w-8 md:h-8'} 
-                  ${getKeyStyle(key)}
-                  ${gameStatus !== 'playing' ? 'opacity-50 cursor-not-allowed' : 'active:scale-95'}
-                `}
-              >
-                {key === 'CLEAR' ? <ChevronLeft className="w-5 h-5" /> : 
-                 key === 'SUBMIT' ? <Check className="w-5 h-5" />  : 
-                 key}
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
+            {/* Compact Game Grid */}
+            <div className="flex-1 flex items-center justify-center">
+              <div className="p-3 md:p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/20">
+                <div className="grid grid-rows-6 gap-1.5">
+                  {grid.map((rowData, rowIndex) => (
+                    <div key={rowIndex} className="flex gap-1.5 justify-center">
+                      {rowData.map((letter, colIndex) => (
+                        <div 
+                          key={`${rowIndex}-${colIndex}`} 
+                          className={`w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-lg md:text-xl font-black rounded-lg transition-all duration-300 transform ${
+                            rowIndex === currentRow && colIndex === currentCol && gameStatus === 'playing' 
+                              ? 'scale-105 ring-2 ring-indigo-400' 
+                              : ''
+                          } ${getCellStyle(letter, rowIndex, colIndex)}`}
+                        >
+                          {letter}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
 
-          
-          {gameStatus !== 'playing' && (
-            <button
-              onClick={() => {
-                setGrid(initialGrid)
-                setCurrentRow(0)
-                setCurrentCol(0)
-                setGameStatus('playing')
-              }}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-sm"
-            >
-              Play Again
-            </button>
-          )}
-        </>
-      )}
+           
+            <div className="space-y-1 pb-2">
+              {keyboardRows.map((row, rowIndex) => (
+                <div key={rowIndex} className="flex justify-center gap-1">
+                  {row.map((key) => (
+                    <button
+                      key={key}
+                      onClick={() => handleKeyPress(key)}
+                      disabled={gameStatus !== 'playing'}
+                      className={`
+                        rounded-md font-bold transition-all duration-200 shadow-sm
+                        ${key === 'SUBMIT' || key === 'CLEAR' 
+                          ? 'px-2 py-2 text-xs' 
+                          : 'w-7 h-9 md:w-8 md:h-10 text-xs md:text-sm'
+                        } 
+                        ${getKeyStyle(key)}
+                        ${gameStatus !== 'playing' 
+                          ? 'opacity-50 cursor-not-allowed' 
+                          : 'active:scale-95 hover:shadow-md'
+                        }
+                      `}
+                    >
+                      {key === 'CLEAR' ? (
+                        <ChevronLeft className="w-3 h-3 md:w-4 md:h-4" />
+                      ) : key === 'SUBMIT' ? (
+                        <Check className="w-3 h-3 md:w-4 md:h-4" />
+                      ) : (
+                        key
+                      )}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+
+            {/* Compact Game Controls */}
+            {gameStatus !== 'playing' && (
+              <div className="flex justify-center pb-2">
+                <button
+                  onClick={() => {
+                    setGrid(initialGrid)
+                    setCurrentRow(0)
+                    setCurrentCol(0)
+                    setGameStatus('playing')
+                  }}
+                  className="group relative overflow-hidden bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                >
+                  <span className="relative z-10 flex items-center space-x-2 text-sm">
+                    <RotateCcw className="w-4 h-4" />
+                    <span>Play Again</span>
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 to-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+              </div>
+            )}
+
+            {/* Compact Progress Indicator */}
+            <div className="flex justify-center pb-1">
+              <div className="flex space-x-1">
+                {Array.from({ length: ROWS }).map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                      index < currentRow || gameStatus !== 'playing'
+                        ? index < currentRow && gameStatus === 'won' && index === currentRow - 1
+                          ? 'bg-green-500'
+                          : index < currentRow
+                          ? 'bg-gray-400'
+                          : 'bg-red-500'
+                        : index === currentRow
+                        ? 'bg-indigo-500 animate-pulse'
+                        : 'bg-gray-200 dark:bg-gray-700'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   )
 }
