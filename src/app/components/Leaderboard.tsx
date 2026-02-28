@@ -1,17 +1,17 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { IoMdClose } from 'react-icons/io'
+import { getMyStats } from '@/app/actions/stats'
 
 type Props = { onClose: () => void }
 
 export default function Leaderboard({ onClose }: Props) {
   const [stats, setStats] = useState<any>(null)
 
+  // Direct server-action call — no dynamic import overhead.
+  // The action itself is cached via unstable_cache.
   useEffect(() => {
-    // dynamic import keeps Prisma on the server
-    import('@/app/actions/stats')
-      .then(m => m.getMyStats())
-      .then(setStats)
+    getMyStats().then(setStats)
   }, [])
 
   if (!stats) return null

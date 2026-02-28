@@ -1,8 +1,7 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { ChevronLeft, Check, X, RotateCcw } from 'lucide-react'
 import { recordGame } from '@/app/actions/stats'
-import { getCurrentTargetWord } from '@/app/actions/wordleConfig'
 
 const ROWS = 6
 const COLS = 5
@@ -15,30 +14,18 @@ const keyboardRows = [
   ['CLEAR', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'SUBMIT'],
 ]
 
-export default function WordPuzzle() {
+interface WordPuzzleProps {
+  initialTargetWord?: string
+}
+
+export default function WordPuzzle({ initialTargetWord = 'BRAIN' }: WordPuzzleProps) {
   const [grid, setGrid] = useState(initialGrid)
   const [currentRow, setCurrentRow] = useState(0)
   const [currentCol, setCurrentCol] = useState(0)
   const [gameStatus, setGameStatus] = useState('playing')
-  const [targetWord, setTargetWord] = useState('BRAIN')
-  const [loading, setLoading] = useState(true)
-
-  // Fetch target word on component mount
-  useEffect(() => {
-    const fetchTargetWord = async () => {
-      try {
-        const word = await getCurrentTargetWord()
-        setTargetWord(word)
-      } catch (error) {
-        console.error('Failed to fetch target word:', error)
-        setTargetWord('BRAIN') // fallback
-      } finally {
-        setLoading(false)
-      }
-    }
-    
-    fetchTargetWord()
-  }, [])
+  // Target word is now server-prefetched — no client fetch needed
+  const [targetWord] = useState(initialTargetWord)
+  const loading = false
 
   function getCellStyle(letter: string, rowIndex: number, colIndex: number) {
     if (!letter) {

@@ -2,7 +2,7 @@
 
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 
 
 const ADMIN_CREDENTIALS = [
@@ -13,40 +13,52 @@ const ADMIN_CREDENTIALS = [
  
 ]
 
+// Cached admin check — revalidated when admin status could change
+const _checkAdmin = unstable_cache(
+  async (userId: string) => {
+    try {
+      const user = await currentUser()
+      if (!user) return false
+      return ADMIN_CREDENTIALS.some(admin =>
+        user.username === admin.username ||
+        user.emailAddresses?.some(email => email.emailAddress === admin.email)
+      )
+    } catch (error) {
+      console.error('Error checking admin status:', error)
+      return false
+    }
+  },
+  ['admin-check'],
+  { revalidate: 300, tags: ['admin-check'] } // cache 5 min
+)
+
 export async function isUserAdmin(): Promise<boolean> {
   const { userId } = await auth()
   if (!userId) return false
-  
-  try {
-    const user = await currentUser()
-    if (!user) return false
-    
-    
-    const isAdmin = ADMIN_CREDENTIALS.some(admin => 
-      user.username === admin.username || 
-      user.emailAddresses?.some(email => email.emailAddress === admin.email)
-    )
-    
-    return isAdmin
-  } catch (error) {
-    console.error('Error checking admin status:', error)
-    return false
-  }
+  return _checkAdmin(userId)
 }
 
+// Cached target word — revalidated when admin sets a new word
+const _fetchTargetWord = unstable_cache(
+  async () => {
+    try {
+      const activeWord = await prisma.wordleConfig.findFirst({
+        where: { isActive: true },
+        orderBy: { createdAt: 'desc' },
+        select: { targetWord: true },
+      })
+      return activeWord?.targetWord || 'BRAIN'
+    } catch (error) {
+      console.error('Error fetching target word:', error)
+      return 'BRAIN'
+    }
+  },
+  ['current-target-word'],
+  { revalidate: 60, tags: ['target-word'] } // cache 60s + tag-based invalidation
+)
+
 export async function getCurrentTargetWord(): Promise<string> {
-  try {
-    const activeWord = await prisma.wordleConfig.findFirst({
-      where: { isActive: true },
-      orderBy: { createdAt: 'desc' }
-    })
-    
-    
-    return activeWord?.targetWord || 'BRAIN'
-  } catch (error) {
-    console.error('Error fetching target word:', error)
-    return 'BRAIN' 
-  }
+  return _fetchTargetWord()
 }
 
 export async function setTargetWord(newWord: string): Promise<{ success: boolean; message: string }> {
@@ -88,6 +100,9 @@ export async function setTargetWord(newWord: string): Promise<{ success: boolean
     })
     
     
+    // Bust caches by tag so all cached reads pick up the new word
+    revalidateTag('target-word')
+    revalidateTag('word-history')
     revalidatePath('/wordle')
     revalidatePath('/admin')
     revalidatePath('/')
@@ -99,6 +114,24 @@ export async function setTargetWord(newWord: string): Promise<{ success: boolean
   }
 }
 
+// Cached word history — revalidated when a new word is set
+const _fetchWordHistory = unstable_cache(
+  async () => {
+    try {
+      const history = await prisma.wordleConfig.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: 20,
+      })
+      return history
+    } catch (error) {
+      console.error('Error fetching word history:', error)
+      return []
+    }
+  },
+  ['word-history'],
+  { revalidate: 60, tags: ['word-history'] }
+)
+
 export async function getWordHistory(): Promise<Array<{
   id: number
   targetWord: string
@@ -106,16 +139,5 @@ export async function getWordHistory(): Promise<Array<{
   isActive: boolean
   createdBy: string | null
 }>> {
-  
-  try {
-    const history = await prisma.wordleConfig.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 20
-    })
-    
-    return history
-  } catch (error) {
-    console.error('Error fetching word history:', error)
-    return []
-  }
+  return _fetchWordHistory()
 }

@@ -11,8 +11,9 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.31.6",
-    "@neondatabase/serverless": "^1.0.1",
-    "@prisma/client": "^6.15.0",
+    "@neondatabase/serverless": "^1.0.2",
+    "@prisma/adapter-neon": "^7.4.2",
+    "@prisma/client": "^7.4.2",
     "drizzle-kit": "^0.31.4",
     "drizzle-orm": "^0.44.5",
     "lucide-react": "^0.542.0",
@@ -30,7 +31,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
-    "prisma": "^6.15.0",
+    "prisma": "^7.4.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
